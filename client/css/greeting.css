@@ -1,0 +1,53 @@
+/* css/greeting.css
+   Styles for the sign-in greeting injected into the welcome hero.
+   Self-contained so it never conflicts with rules already in style.css —
+   safe to include even without seeing your existing stylesheet. */
+
+#heroGreetingTitle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Small waving-hand accent before "Hey!" for a warmer first impression */
+#heroGreetingTitle::before {
+  content: '👋';
+  font-size: 0.85em;
+  display: inline-block;
+  transform-origin: 70% 70%;
+  animation: greeting-wave 1.6s ease-in-out 1;
+}
+
+@keyframes greeting-wave {
+  0%, 100% { transform: rotate(0deg); }
+  15%      { transform: rotate(14deg); }
+  30%      { transform: rotate(-8deg); }
+  45%      { transform: rotate(14deg); }
+  60%      { transform: rotate(-4deg); }
+  75%      { transform: rotate(10deg); }
+}
+
+#heroGreetingSubtitle {
+  font-weight: 500;
+}
+
+/* Highlights the dynamic morning/afternoon/evening word */
+#heroTimeOfDay {
+  color: #10a37f; /* matches the brand accent used in your favicon */
+  font-weight: 600;
+}
+
+/* "ASHU" reads as a signature name — give it a touch of emphasis
+   without needing a separate span in the HTML (styles the whole line,
+   ASHU is naturally the standout word since everything else is lowercase). */
+#heroGreetingSubtitle {
+  letter-spacing: 0.01em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #heroGreetingTitle::before {
+    animation: none;
+  }
+}

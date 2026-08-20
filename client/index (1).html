@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Chatbot — Production Ready ChatGPT Clone</title>
+  <meta name="description" content="Production-ready modern AI Chatbot powered by Google Gemini, OpenRouter, and Groq Free LLMs. Built with Full-Stack JavaScript and MongoDB.">
+  
+  <!-- Favicon / App Icon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2310a37f'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-size='50' fill='white'>🤖</text></svg>">
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Highlight.js CSS for Code Highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+
+  <!-- Application Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/markdown.css">
+  <link rel="stylesheet" href="css/greeting.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Mobile Backdrop -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+    <!-- ==========================================
+         Sidebar
+         ========================================== -->
+    <aside id="sidebar" class="sidebar">
+      <!-- Sidebar Header -->
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <div class="brand-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
+          </div>
+          <span>ChatGPT AI</span>
+        </div>
+        <button id="btnToggleSidebar" class="btn-sidebar-toggle" title="Collapse Sidebar (Desktop)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+        </button>
+      </div>
+
+      <!-- New Chat Button -->
+      <button id="btnNewChat" class="btn-new-chat">
+        <div class="new-chat-left">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span>New Chat</span>
+        </div>
+        <span class="shortcut-badge">Ctrl+N</span>
+      </button>
+
+      <!-- Search Conversations -->
+      <div class="sidebar-search">
+        <svg class="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" id="searchInput" class="search-input" placeholder="Search chats...">
+      </div>
+
+      <!-- Conversations History List -->
+      <div id="historyContainer" class="sidebar-history">
+        <!-- Rendered dynamically by ui.js -->
+      </div>
+
+      <!-- Sidebar Footer / User Profile -->
+      <div class="sidebar-footer">
+        <div id="userWidget" class="user-profile-widget" title="Manage Account / Sign In">
+          <div class="user-info">
+            <div id="userAvatarCircle" class="user-avatar-circle">G</div>
+            <div class="user-details">
+              <span id="userName" class="user-name">Guest User</span>
+              <span id="userRoleBadge" class="user-role-badge">Guest Mode</span>
+            </div>
+          </div>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ==========================================
+         Main Chat Viewport
+         ========================================== -->
+    <main class="main-viewport">
+      <!-- Navbar Header -->
+      <header class="chat-navbar">
+        <div class="navbar-left">
+          <button id="btnOpenSidebar" class="btn-open-sidebar" title="Toggle Sidebar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
+
+          <!-- Model Badge -->
+          <div class="model-dropdown-wrapper">
+            <button class="model-selector-btn" onclick="openSettingsModal()" title="Change AI Model & Provider">
+              <span class="model-badge-dot"></span>
+              <span id="modelBadgeText">Gemini 1.5 Flash</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="navbar-right">
+          <!-- Clear Chat -->
+          <button id="btnClearChat" class="nav-action-btn" title="Clear all chat history">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            <span>Clear History</span>
+          </button>
+
+          <!-- Theme Toggle -->
+          <button id="themeToggleBtn" class="nav-action-btn" title="Toggle Dark / Light Theme">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          </button>
+
+          <!-- Settings Button -->
+          <button id="btnSettings" class="nav-action-btn" title="AI Settings & API Keys">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <span>Settings</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Scrollable Message Feed -->
+      <section id="chatMessages" class="chat-messages-container">
+        <!-- Welcome Hero (Shown when no messages exist) -->
+        <div id="welcomeHero" class="welcome-hero">
+          <div class="hero-logo-box">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
+          </div>
+          <h1 class="hero-title" id="heroGreetingTitle">Hey! How's your day going on?</h1>
+          <p class="hero-subtitle" id="heroGreetingSubtitle">Good <span id="heroTimeOfDay">day</span> — ASHU this side, how can I help you?</p>
+
+          <!-- Starter Suggestion Cards -->
+          <div id="promptSuggestions" class="prompt-suggestions-grid">
+            <!-- Dynamically populated by ui.js -->
+          </div>
+        </div>
+
+        <!-- Rendered Message Rows -->
+        <div id="messagesInner" class="messages-inner-wrapper"></div>
+      </section>
+
+      <!-- Sticky Prompt Input Area -->
+      <footer class="chat-input-area">
+        <div class="input-box-container">
+          <form id="promptForm" onsubmit="return false;">
+            <textarea
+              id="promptInput"
+              class="prompt-textarea"
+              rows="1"
+              placeholder="Ask anything... (Shift+Enter for newline)"
+              autocomplete="off"
+            ></textarea>
+          </form>
+
+          <div class="input-actions-bar">
+            <div class="input-actions-left">
+              <button id="btnVoice" class="input-icon-btn" title="Voice Input (Speech-to-Text)">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+              </button>
+            </div>
+
+            <div class="input-actions-right">
+              <button id="btnSend" class="btn-send-message" title="Send message">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="input-disclaimer">
+          AI can make mistakes. Consider checking important information.
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- ==========================================
+       Settings Modal
+       ========================================== -->
+  <div id="settingsModal" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title">AI & Model Configuration</h2>
+        <button class="btn-close-modal" onclick="closeAllModals()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="settingsProvider">AI Provider</label>
+          <select id="settingsProvider" class="form-select">
+            <option value="gemini">Google Gemini (Recommended & Free)</option>
+            <option value="openrouter">OpenRouter Free Models (Llama 3.2 / DeepSeek / Qwen)</option>
+            <option value="groq">Groq Cloud (Ultra-Fast Inference)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="settingsModel">Model Name</label>
+          <select id="settingsModel" class="form-select">
+            <!-- Dynamically populated -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="settingsTemp">
+            <span>Temperature (Creativity)</span>
+            <span id="tempValBadge" class="range-val-badge">0.7</span>
+          </label>
+          <div class="form-range-container">
+            <input type="range" id="settingsTemp" class="form-range" min="0" max="1.5" step="0.1" value="0.7">
+          </div>
+          <span class="form-hint">Lower values = more focused & deterministic. Higher values = more creative.</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="settingsSystemPrompt">System Prompt (Instructions)</label>
+          <textarea id="settingsSystemPrompt" class="form-textarea" placeholder="Provide general personality or instructions to the AI..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="settingsApiKey">Custom API Key (Optional)</label>
+          <input type="password" id="settingsApiKey" class="form-input" placeholder="Override default API key from server .env">
+          <span class="form-hint">Keys provided here are stored only in your local browser storage.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeAllModals()">Cancel</button>
+        <button class="btn-primary" onclick="saveSettingsModal()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       Authentication Modal
+       ========================================== -->
+  <div id="authModal" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title">Account</h2>
+        <button class="btn-close-modal" onclick="closeAllModals()">✕</button>
+      </div>
+      <div id="authModalBody" class="modal-body">
+        <!-- Dynamically rendered by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       Toast Container
+       ========================================== -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Scripts: Marked.js, Highlight.js, DOMPurify -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.9/purify.min.js"></script>
+
+  <!-- Application Modules -->
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/greeting.js"></script>
+</body>
+</html>
